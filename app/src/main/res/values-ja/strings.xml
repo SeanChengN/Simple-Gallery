@@ -42,6 +42,7 @@
     <string name="gifs">GIF</string>
     <string name="raw_images">RAW</string>
     <string name="svgs">SVG</string>
+    <string name="portraits">Portraits</string>
     <string name="no_media_with_filters">条件に該当するメディアがありません。</string>
     <string name="change_filters_underlined"><u>絞り込み条件を変更</u></string>
 
@@ -187,6 +188,7 @@
     <string name="speed">Speed</string>
     <string name="compromise">Compromise</string>
     <string name="avoid_showing_invalid_files">Avoid showing invalid files</string>
+    <string name="show_image_file_types">Show image file types</string>
 
     <!-- Setting sections -->
     <string name="thumbnails">サムネイル設定</string>

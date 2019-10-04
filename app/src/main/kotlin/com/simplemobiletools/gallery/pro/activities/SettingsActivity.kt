@@ -3,6 +3,7 @@ package com.simplemobiletools.gallery.pro.activities
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.Menu
 import com.simplemobiletools.commons.dialogs.*
 import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.*
@@ -63,6 +64,7 @@ class SettingsActivity : SimpleActivity() {
         setupShowNotch()
         setupBottomActions()
         setupThumbnailVideoDuration()
+        setupThumbnailFileTypes()
         setupShowMediaCount()
         setupKeepLastModified()
         setupShowInfoBubble()
@@ -84,6 +86,12 @@ class SettingsActivity : SimpleActivity() {
         setupSectionColors()
         setupExportSettings()
         setupImportSettings()
+        invalidateOptionsMenu()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        updateMenuItemColors(menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun setupSectionColors() {
@@ -237,6 +245,14 @@ class SettingsActivity : SimpleActivity() {
         settings_show_thumbnail_video_duration_holder.setOnClickListener {
             settings_show_thumbnail_video_duration.toggle()
             config.showThumbnailVideoDuration = settings_show_thumbnail_video_duration.isChecked
+        }
+    }
+
+    private fun setupThumbnailFileTypes() {
+        settings_show_thumbnail_file_types.isChecked = config.showThumbnailFileTypes
+        settings_show_thumbnail_file_types_holder.setOnClickListener {
+            settings_show_thumbnail_file_types.toggle()
+            config.showThumbnailFileTypes = settings_show_thumbnail_file_types.isChecked
         }
     }
 

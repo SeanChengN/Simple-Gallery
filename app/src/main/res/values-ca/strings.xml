@@ -42,6 +42,7 @@
     <string name="gifs">GIFs</string>
     <string name="raw_images">Imatges RAW</string>
     <string name="svgs">SVGs</string>
+    <string name="portraits">Retrats</string>
     <string name="no_media_with_filters">No s’han tronat arxius amb els filtres seleccionats.</string>
     <string name="change_filters_underlined"><u>Canviar filtres</u></string>
 
@@ -187,6 +188,7 @@
     <string name="speed">Velocitat</string>
     <string name="compromise">Compromès</string>
     <string name="avoid_showing_invalid_files">Eviteu mostrar fitxers no vàlids</string>
+    <string name="show_image_file_types">Mostra els tipus de fitxers d\’imatges</string>
 
     <!-- Setting sections -->
     <string name="thumbnails">Miniatures</string>

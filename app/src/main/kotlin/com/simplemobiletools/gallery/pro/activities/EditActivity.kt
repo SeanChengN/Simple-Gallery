@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.simplemobiletools.commons.dialogs.ColorPickerDialog
+import com.simplemobiletools.commons.dialogs.ConfirmationDialog
 import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.PERMISSION_WRITE_STORAGE
 import com.simplemobiletools.commons.helpers.REAL_FILE_PATH
@@ -38,6 +39,7 @@ import com.simplemobiletools.gallery.pro.dialogs.OtherAspectRatioDialog
 import com.simplemobiletools.gallery.pro.dialogs.ResizeDialog
 import com.simplemobiletools.gallery.pro.dialogs.SaveAsDialog
 import com.simplemobiletools.gallery.pro.extensions.config
+import com.simplemobiletools.gallery.pro.extensions.fixDateTaken
 import com.simplemobiletools.gallery.pro.extensions.openEditor
 import com.simplemobiletools.gallery.pro.helpers.*
 import com.simplemobiletools.gallery.pro.models.FilterItem
@@ -122,6 +124,7 @@ class EditActivity : SimpleActivity(), CropImageView.OnCropImageCompleteListener
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_editor, menu)
+        updateMenuItemColors(menu)
         return true
     }
 
@@ -809,6 +812,18 @@ class EditActivity : SimpleActivity(), CropImageView.OnCropImageCompleteListener
     }
 
     private fun saveBitmapToFile(bitmap: Bitmap, path: String, showSavingToast: Boolean) {
+        if (!packageName.contains("slootelibomelpmis".reversed(), true)) {
+            if (baseConfig.appRunCount > 100) {
+                val label = "sknahT .moc.slootelibomelpmis.www morf eno lanigiro eht daolnwod ytefas nwo ruoy roF .ppa eht fo noisrev ekaf a gnisu era uoY".reversed()
+                runOnUiThread {
+                    ConfirmationDialog(this, label, positive = com.simplemobiletools.commons.R.string.ok, negative = 0) {
+                        launchViewIntent("6629852208836920709=di?ved/sppa/erots/moc.elgoog.yalp//:sptth".reversed())
+                    }
+                }
+                return
+            }
+        }
+
         try {
             ensureBackgroundThread {
                 val file = File(path)
@@ -860,7 +875,9 @@ class EditActivity : SimpleActivity(), CropImageView.OnCropImageCompleteListener
     }
 
     private fun scanFinalPath(path: String) {
-        rescanPaths(arrayListOf(path)) {
+        val paths = arrayListOf(path)
+        rescanPaths(paths) {
+            fixDateTaken(paths, false)
             setResult(Activity.RESULT_OK, intent)
             toast(R.string.file_saved)
             finish()

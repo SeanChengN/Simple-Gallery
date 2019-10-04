@@ -42,6 +42,7 @@
     <string name="gifs">GIF-ovi</string>
     <string name="raw_images">RAW slike</string>
     <string name="svgs">SVG-ovi</string>
+    <string name="portraits">Portraits</string>
     <string name="no_media_with_filters">Nije pronađena nijedna datoteka s odabranim filtrom.</string>
     <string name="change_filters_underlined"><u>Promijeni filter</u></string>
 
@@ -187,6 +188,7 @@
     <string name="speed">Speed</string>
     <string name="compromise">Compromise</string>
     <string name="avoid_showing_invalid_files">Avoid showing invalid files</string>
+    <string name="show_image_file_types">Show image file types</string>
 
     <!-- Setting sections -->
     <string name="thumbnails">Sličice</string>

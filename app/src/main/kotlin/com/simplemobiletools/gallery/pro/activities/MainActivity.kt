@@ -289,6 +289,7 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
         menu.findItem(R.id.temporarily_show_hidden).isVisible = !config.shouldShowHidden
         menu.findItem(R.id.stop_showing_hidden).isVisible = config.temporarilyShowHidden
 
+        updateMenuItemColors(menu)
         return true
     }
 
@@ -408,14 +409,15 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
                     config.addIncludedFolder(otgPath)
                 }
 
-                if (config.OTGPath.isEmpty()) {
+                // OTG handling has been changed again in SDK version 28, the old method no longer works
+                /*if (config.OTGPath.isEmpty()) {
                     runOnUiThread {
                         ConfirmationDialog(this, getString(R.string.usb_detected), positive = R.string.ok, negative = 0) {
                             config.wasOTGHandled = true
                             showOTGPermissionDialog()
                         }
                     }
-                }
+                }*/
             }
         }
     }
@@ -948,7 +950,7 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
 
         val foldersToScan = mediaFetcher.getFoldersToScan()
         foldersToScan.add(FAVORITES)
-        if (config.useRecycleBin && config.showRecycleBinAtFolders) {
+        if (config.showRecycleBinAtFolders) {
             foldersToScan.add(RECYCLE_BIN)
         } else {
             foldersToScan.remove(RECYCLE_BIN)
@@ -1117,8 +1119,11 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
             if (!File(it.path).exists()) {
                 invalidDirs.add(it)
             } else if (it.path != config.tempFolderPath) {
-                val children = File(it.path).list()?.asList()
-                val hasMediaFile = children?.any { it?.isMediaFile() == true } ?: false
+                val children = File(it.path).listFiles()?.asList()
+                val hasMediaFile = children?.any {
+                    it?.isMediaFile() == true || (it.isDirectory && it.name.startsWith("img_", true))
+                } ?: false
+
                 if (!hasMediaFile) {
                     invalidDirs.add(it)
                 }

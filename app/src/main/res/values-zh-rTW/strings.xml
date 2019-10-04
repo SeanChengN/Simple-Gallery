@@ -42,6 +42,7 @@
     <string name="gifs">GIF</string>
     <string name="raw_images">RAW圖檔</string>
     <string name="svgs">SVG</string>
+    <string name="portraits">人像</string>
     <string name="no_media_with_filters">選擇的篩選條件未發現媒體檔案。</string>
     <string name="change_filters_underlined"><u>更改篩選條件</u></string>
 
@@ -141,7 +142,7 @@
     <string name="by_date_taken_monthly">拍攝日期 (按月)</string>
     <string name="by_file_type">檔案類型</string>
     <string name="by_extension">副檔名</string>
-    <string name="grouping_and_sorting">請注意，歸類和排序是兩者是獨立的</string>
+    <string name="grouping_and_sorting">請注意，歸類和排序兩者是獨立的</string>
 
     <!-- Widgets -->
     <string name="folder_on_widget">在小工具顯示資料夾:</string>
@@ -187,6 +188,7 @@
     <string name="speed">速度</string>
     <string name="compromise">折衷</string>
     <string name="avoid_showing_invalid_files">避免顯示無效的檔案</string>
+    <string name="show_image_file_types">顯示圖片檔案類型</string>
 
     <!-- Setting sections -->
     <string name="thumbnails">縮圖</string>

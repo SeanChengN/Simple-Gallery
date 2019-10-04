@@ -19,6 +19,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
+import android.text.Html
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -126,6 +127,7 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
         invalidateOptionsMenu()
 
         supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        supportActionBar?.title = Html.fromHtml("<font color=#FFFFFF'>${mPath.getFilenameFromPath()}</font>")
         window.statusBarColor = Color.TRANSPARENT
     }
 
@@ -189,6 +191,8 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
         if (visibleBottomActions != 0) {
             updateBottomActionIcons(currentMedium)
         }
+
+        updateMenuItemColors(menu, baseColor = Color.BLACK)
         return true
     }
 
@@ -262,7 +266,18 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
             return
         }
 
-        if (!File(mPath).exists()) {
+        if (mPath.isPortrait() && getPortraitPath() == "") {
+            val newIntent = Intent(this, ViewPagerActivity::class.java)
+            newIntent.putExtras(intent!!.extras!!)
+            newIntent.putExtra(PORTRAIT_PATH, mPath)
+            newIntent.putExtra(PATH, "${mPath.getParentPath().getParentPath()}/${mPath.getFilenameFromPath()}")
+
+            startActivity(newIntent)
+            finish()
+            return
+        }
+
+        if (!File(mPath).exists() && getPortraitPath() == "") {
             finish()
             return
         }
@@ -319,19 +334,8 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
                 visibility and View.SYSTEM_UI_FLAG_FULLSCREEN != 0
             }
 
-            view_pager.adapter?.let {
-                (it as MyPagerAdapter).toggleFullscreen(mIsFullScreen)
-                checkSystemUI()
-                val newAlpha = if (mIsFullScreen) 0f else 1f
-                top_shadow.animate().alpha(newAlpha).start()
-                if (bottom_actions.isVisible()) {
-                    bottom_actions.animate().alpha(newAlpha).start()
-                    arrayOf(bottom_favorite, bottom_edit, bottom_share, bottom_delete, bottom_rotate, bottom_properties, bottom_change_orientation,
-                            bottom_slideshow, bottom_show_on_map, bottom_toggle_file_visibility, bottom_rename).forEach {
-                        it.isClickable = !mIsFullScreen
-                    }
-                }
-            }
+            checkSystemUI()
+            fullscreenToggled()
         }
 
         if (intent.action == "com.android.camera.action.REVIEW") {
@@ -343,6 +347,7 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
                         mPath.isGif() -> TYPE_GIFS
                         mPath.isSvg() -> TYPE_SVGS
                         mPath.isRawFast() -> TYPE_RAWS
+                        mPath.isPortrait() -> TYPE_PORTRAITS
                         else -> TYPE_IMAGES
                     }
 
@@ -514,7 +519,7 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
     private fun scheduleSwipe() {
         mSlideshowHandler.removeCallbacksAndMessages(null)
         if (mIsSlideshowActive) {
-            if (getCurrentMedium()!!.isImage() || getCurrentMedium()!!.isGIF()) {
+            if (getCurrentMedium()!!.isImage() || getCurrentMedium()!!.isGIF() || getCurrentMedium()!!.isPortrait()) {
                 mSlideshowHandler.postDelayed({
                     if (mIsSlideshowActive && !isDestroyed) {
                         swipeToNextMedium()
@@ -536,7 +541,7 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
 
     private fun getMediaForSlideshow(): Boolean {
         mSlideshowMedia = mMediaFiles.filter {
-            it.isImage() || (config.slideshowIncludeVideos && it.isVideo() || (config.slideshowIncludeGIFs && it.isGIF()))
+            it.isImage() || it.isPortrait() || (config.slideshowIncludeVideos && it.isVideo() || (config.slideshowIncludeGIFs && it.isGIF()))
         }.toMutableList()
 
         if (config.slideshowRandomOrder) {
@@ -572,6 +577,11 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
 
         val fileDirItems = arrayListOf(FileDirItem(currPath, currPath.getFilenameFromPath()))
         tryCopyMoveFilesTo(fileDirItems, isCopyOperation) {
+            val newPath = "$it/${currPath.getFilenameFromPath()}"
+            rescanPaths(arrayListOf(newPath)) {
+                fixDateTaken(arrayListOf(newPath), false)
+            }
+
             config.tempFolderPath = ""
             if (!isCopyOperation) {
                 refreshViewPager()
@@ -620,12 +630,12 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
     private fun getChangeOrientationIcon(): Int {
         return if (mIsOrientationLocked) {
             if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-                R.drawable.ic_orientation_portrait
+                R.drawable.ic_orientation_portrait_vector
             } else {
-                R.drawable.ic_orientation_landscape
+                R.drawable.ic_orientation_landscape_vector
             }
         } else {
-            R.drawable.ic_orientation_auto
+            R.drawable.ic_orientation_auto_vector
         }
     }
 
@@ -671,6 +681,8 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
     }
 
     private fun getCurrentPhotoFragment() = getCurrentFragment() as? PhotoFragment
+
+    private fun getPortraitPath() = intent.getStringExtra(PORTRAIT_PATH) ?: ""
 
     private fun isShowHiddenFlagNeeded(): Boolean {
         val file = File(mPath)
@@ -798,10 +810,10 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
             return
         }
 
-        val favoriteIcon = if (medium.isFavorite) R.drawable.ic_star_on else R.drawable.ic_star_off
+        val favoriteIcon = if (medium.isFavorite) R.drawable.ic_star_on_vector else R.drawable.ic_star_off_vector
         bottom_favorite.setImageResource(favoriteIcon)
 
-        val hideIcon = if (medium.isHidden()) R.drawable.ic_unhide else R.drawable.ic_hide
+        val hideIcon = if (medium.isHidden()) R.drawable.ic_unhide_vector else R.drawable.ic_hide
         bottom_toggle_file_visibility.setImageResource(hideIcon)
 
         bottom_rotate.beVisibleIf(config.visibleBottomActions and BOTTOM_ACTION_ROTATE != 0 && getCurrentMedium()?.isImage() == true)
@@ -997,7 +1009,7 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         initBottomActionsLayout()
     }
@@ -1034,7 +1046,17 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
     private fun getPositionInList(items: MutableList<Medium>): Int {
         mPos = 0
         for ((i, medium) in items.withIndex()) {
-            if (medium.path == mPath) {
+            val portraitPath = getPortraitPath()
+            if (portraitPath != "") {
+                val portraitPaths = File(portraitPath).parentFile?.list()
+                if (portraitPaths != null) {
+                    for (path in portraitPaths) {
+                        if (medium.name == path) {
+                            return i
+                        }
+                    }
+                }
+            } else if (medium.path == mPath) {
                 return i
             }
         }
@@ -1073,6 +1095,9 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
     override fun fragmentClicked() {
         mIsFullScreen = !mIsFullScreen
         checkSystemUI()
+        if (isChromebook()) {
+            fullscreenToggled()
+        }
     }
 
     override fun videoEnded(): Boolean {
@@ -1126,6 +1151,21 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
         } else {
             stopSlideshow()
             showSystemUI(true)
+        }
+    }
+
+    private fun fullscreenToggled() {
+        view_pager.adapter?.let {
+            (it as MyPagerAdapter).toggleFullscreen(mIsFullScreen)
+            val newAlpha = if (mIsFullScreen) 0f else 1f
+            top_shadow.animate().alpha(newAlpha).start()
+            if (bottom_actions.isVisible()) {
+                bottom_actions.animate().alpha(newAlpha).start()
+                arrayOf(bottom_favorite, bottom_edit, bottom_share, bottom_delete, bottom_rotate, bottom_properties, bottom_change_orientation,
+                        bottom_slideshow, bottom_show_on_map, bottom_toggle_file_visibility, bottom_rename).forEach {
+                    it.isClickable = !mIsFullScreen
+                }
+            }
         }
     }
 

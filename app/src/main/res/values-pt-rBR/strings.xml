@@ -42,6 +42,7 @@
     <string name="gifs">GIFs</string>
     <string name="raw_images">Imagens RAW</string>
     <string name="svgs">SVGs</string>
+    <string name="portraits">Portraits</string>
     <string name="no_media_with_filters">Nenhum arquivo de mídia encontrado a partir dos filtros selecionados.</string>
     <string name="change_filters_underlined"><u>Alterar filtros</u></string>
 
@@ -187,6 +188,7 @@
     <string name="speed">Velocidade</string>
     <string name="compromise">Meio termo</string>
     <string name="avoid_showing_invalid_files">Evitar a exibição de arquivos inválidos</string>
+    <string name="show_image_file_types">Show image file types</string>
 
     <!-- Setting sections -->
     <string name="thumbnails">Miniaturas</string>

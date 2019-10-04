@@ -78,6 +78,7 @@ const val LAST_EDITOR_BRUSH_SIZE = "last_editor_brush_size"
 const val SHOW_NOTCH = "show_notch"
 const val FILE_LOADING_PRIORITY = "file_loading_priority"
 const val SPAM_FOLDERS_CHECKED = "spam_folders_checked"
+const val SHOW_THUMBNAIL_FILE_TYPES = "show_thumbnail_file_types"
 
 // slideshow
 const val SLIDESHOW_INTERVAL = "slideshow_interval"
@@ -126,6 +127,7 @@ const val SET_WALLPAPER_INTENT = "set_wallpaper_intent"
 const val IS_VIEW_INTENT = "is_view_intent"
 const val PICKED_PATHS = "picked_paths"
 const val SHOULD_INIT_FRAGMENT = "should_init_fragment"
+const val PORTRAIT_PATH = "portrait_path"
 
 // rotations
 const val ROTATE_BY_SYSTEM_SETTING = 0
@@ -161,7 +163,8 @@ const val TYPE_VIDEOS = 2
 const val TYPE_GIFS = 4
 const val TYPE_RAWS = 8
 const val TYPE_SVGS = 16
-const val TYPE_DEFAULT_FILTER = TYPE_IMAGES or TYPE_VIDEOS or TYPE_GIFS or TYPE_RAWS or TYPE_SVGS
+const val TYPE_PORTRAITS = 32
+const val TYPE_DEFAULT_FILTER = TYPE_IMAGES or TYPE_VIDEOS or TYPE_GIFS or TYPE_RAWS or TYPE_SVGS or TYPE_PORTRAITS
 
 const val LOCATION_INTERNAL = 1
 const val LOCATION_SD = 2
@@ -208,3 +211,9 @@ const val MAX_VIDEO_ZOOM_SCALE = 5f
 const val ZOOM_MODE_NONE = 0
 const val ZOOM_MODE_DRAG = 1
 const val ZOOM_MODE_ZOOM = 2
+
+// constants related to image quality
+const val LOW_TILE_DPI = 160
+const val NORMAL_TILE_DPI = 220
+const val WEIRD_TILE_DPI = 240
+const val HIGH_TILE_DPI = 280
