@@ -149,6 +149,7 @@ open class PhotoVideoActivity : SimpleActivity(), ViewPagerFragment.FragmentList
             filename.isGif() -> TYPE_GIFS
             filename.isRawFast() -> TYPE_RAWS
             filename.isSvg() -> TYPE_SVGS
+            file.isPortrait() -> TYPE_PORTRAITS
             else -> TYPE_IMAGES
         }
 
@@ -222,13 +223,14 @@ open class PhotoVideoActivity : SimpleActivity(), ViewPagerFragment.FragmentList
         finish()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         initBottomActionsLayout()
     }
 
     private fun sendViewPagerIntent(path: String) {
         Intent(this, ViewPagerActivity::class.java).apply {
+            putExtra(SHOW_FAVORITES, intent.getBooleanExtra(SHOW_FAVORITES, false))
             putExtra(IS_VIEW_INTENT, true)
             putExtra(IS_FROM_GALLERY, mIsFromGallery)
             putExtra(PATH, path)
@@ -248,6 +250,7 @@ open class PhotoVideoActivity : SimpleActivity(), ViewPagerFragment.FragmentList
             findItem(R.id.menu_show_on_map).isVisible = visibleBottomActions and BOTTOM_ACTION_SHOW_ON_MAP == 0
         }
 
+        updateMenuItemColors(menu)
         return true
     }
 
@@ -278,7 +281,8 @@ open class PhotoVideoActivity : SimpleActivity(), ViewPagerFragment.FragmentList
                 path.isVideoFast() && filter and TYPE_VIDEOS == 0 ||
                 path.isGif() && filter and TYPE_GIFS == 0 ||
                 path.isRawFast() && filter and TYPE_RAWS == 0 ||
-                path.isSvg() && filter and TYPE_SVGS == 0)
+                path.isSvg() && filter and TYPE_SVGS == 0 ||
+                path.isPortrait() && filter and TYPE_PORTRAITS == 0)
     }
 
     private fun initBottomActions() {

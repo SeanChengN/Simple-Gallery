@@ -1,6 +1,47 @@
 Changelog
 ==========
 
+Version 6.9.6 *(2019-09-12)*
+----------------------------
+
+ * Improved the performance of loading fullscreen images in some cases
+ * Properly handle some specific SD cards
+ * Properly fetch Date Taken value on Android 10
+
+Version 6.9.5 *(2019-09-08)*
+----------------------------
+
+ * Added optional thumbnail icons for showing GIF/SVG/RAW file types
+ * Properly handle Date Taken value at copy/move/edit
+ * Fixed a glitch with white top actionmenu at selecting items
+ * Fixed fullscreen mode toggling on Chromebooks
+
+Version 6.9.4 *(2019-08-21)*
+----------------------------
+
+ * Let's load a higher resolution image at the fullscreen view
+
+Version 6.9.3 *(2019-08-19)*
+----------------------------
+
+ * Added some light theme related improvements
+ * Properly keep the last_modified field at copy/move in some new cases
+ * Changed the way fullscreen images are loaded to fix some rotation issues
+ * Fixed some video playback aspect ratio glitches
+ * Few other improvements here and there
+
+Version 6.9.2 *(2019-08-11)*
+----------------------------
+
+ * Added some performance improvements at fullscreen media on weaker devices
+ * Allow long pressing Properties fields to copy values to the clipboard
+ * Show the errors occuring at file fetching with a toast
+ * Fixed a glitch at batch renaming using a pattern
+ * Try fixing Date Taken values automatically after copy/move
+ * Changed most of the icons to vectors for better quality and lower size
+ * Properly color the top menu icons
+ * Some other UX, performance and stability improvements
+
 Version 6.9.1 *(2019-08-03)*
 ----------------------------
 

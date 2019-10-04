@@ -45,7 +45,7 @@ open class PanoramaPhotoActivity : SimpleActivity() {
         explore.setOnClickListener {
             isExploreEnabled = !isExploreEnabled
             panorama_view.setPureTouchTracking(isExploreEnabled)
-            explore.setImageResource(if (isExploreEnabled) R.drawable.ic_explore else R.drawable.ic_explore_off)
+            explore.setImageResource(if (isExploreEnabled) R.drawable.ic_explore_vector else R.drawable.ic_explore_off_vector)
         }
 
         handlePermission(PERMISSION_WRITE_STORAGE) {
@@ -132,7 +132,7 @@ open class PanoramaPhotoActivity : SimpleActivity() {
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         setupButtonMargins()
     }

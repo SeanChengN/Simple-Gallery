@@ -143,7 +143,7 @@ fun Context.movePinnedDirectoriesToFront(dirs: ArrayList<Directory>): ArrayList<
         }
     }
 
-    if (config.useRecycleBin && config.showRecycleBinAtFolders && config.showRecycleBinLast) {
+    if (config.showRecycleBinAtFolders && config.showRecycleBinLast) {
         val binIndex = dirs.indexOfFirst { it.isRecycleBin() }
         if (binIndex != -1) {
             val bin = dirs.removeAt(binIndex)
@@ -448,7 +448,7 @@ fun Context.getFolderNameFromPath(path: String): String {
 fun Context.loadImage(type: Int, path: String, target: MySquareImageView, horizontalScroll: Boolean, animateGifs: Boolean, cropThumbnails: Boolean,
                       skipMemoryCacheAtPaths: ArrayList<String>? = null) {
     target.isHorizontalScrolling = horizontalScroll
-    if (type == TYPE_IMAGES || type == TYPE_VIDEOS || type == TYPE_RAWS) {
+    if (type == TYPE_IMAGES || type == TYPE_VIDEOS || type == TYPE_RAWS || type == TYPE_PORTRAITS) {
         if (type == TYPE_IMAGES && path.isPng()) {
             loadPng(path, target, cropThumbnails, skipMemoryCacheAtPaths)
         } else {
@@ -566,7 +566,7 @@ fun Context.getCachedDirectories(getVideosOnly: Boolean = false, getImagesOnly: 
             ArrayList<Directory>()
         }
 
-        if (!config.showRecycleBinAtFolders || !config.useRecycleBin) {
+        if (!config.showRecycleBinAtFolders) {
             directories.removeAll { it.isRecycleBin() }
         }
 
@@ -584,7 +584,8 @@ fun Context.getCachedDirectories(getVideosOnly: Boolean = false, getImagesOnly: 
                         (filterMedia and TYPE_VIDEOS != 0 && it.types and TYPE_VIDEOS != 0) ||
                         (filterMedia and TYPE_GIFS != 0 && it.types and TYPE_GIFS != 0) ||
                         (filterMedia and TYPE_RAWS != 0 && it.types and TYPE_RAWS != 0) ||
-                        (filterMedia and TYPE_SVGS != 0 && it.types and TYPE_SVGS != 0)
+                        (filterMedia and TYPE_SVGS != 0 && it.types and TYPE_SVGS != 0) ||
+                        (filterMedia and TYPE_PORTRAITS != 0 && it.types and TYPE_PORTRAITS != 0)
             }
         }) as ArrayList<Directory>
 
@@ -618,6 +619,17 @@ fun Context.getCachedMedia(path: String, getVideosOnly: Boolean = false, getImag
             media.addAll(getUpdatedDeletedMedia(mediumDao))
         }
 
+        if (config.filterMedia and TYPE_PORTRAITS != 0) {
+            val foldersToAdd = ArrayList<String>()
+            for (folder in foldersToScan) {
+                val allFiles = File(folder).listFiles() ?: continue
+                allFiles.filter { it.isDirectory && it.name.startsWith("img_", true) }.forEach {
+                    foldersToAdd.add(it.absolutePath)
+                }
+            }
+            foldersToScan.addAll(foldersToAdd)
+        }
+
         val shouldShowHidden = config.shouldShowHidden
         foldersToScan.filter { path.isNotEmpty() || !config.isFolderProtected(it) }.forEach {
             try {
@@ -640,7 +652,8 @@ fun Context.getCachedMedia(path: String, getVideosOnly: Boolean = false, getImag
                         (filterMedia and TYPE_VIDEOS != 0 && it.type == TYPE_VIDEOS) ||
                         (filterMedia and TYPE_GIFS != 0 && it.type == TYPE_GIFS) ||
                         (filterMedia and TYPE_RAWS != 0 && it.type == TYPE_RAWS) ||
-                        (filterMedia and TYPE_SVGS != 0 && it.type == TYPE_SVGS)
+                        (filterMedia and TYPE_SVGS != 0 && it.type == TYPE_SVGS) ||
+                        (filterMedia and TYPE_PORTRAITS != 0 && it.type == TYPE_PORTRAITS)
             }
         }) as ArrayList<Medium>
 
@@ -801,6 +814,7 @@ fun Context.addPathToDB(path: String) {
             path.isGif() -> TYPE_GIFS
             path.isRawFast() -> TYPE_RAWS
             path.isSvg() -> TYPE_SVGS
+            path.isPortrait() -> TYPE_PORTRAITS
             else -> TYPE_IMAGES
         }
 
@@ -852,3 +866,29 @@ fun Context.updateDirectoryPath(path: String) {
     val directory = createDirectoryFromMedia(path, curMedia, albumCovers, hiddenString, includedFolders, isSortingAscending, getProperFileSize)
     updateDBDirectory(directory, galleryDB.DirectoryDao())
 }
+
+fun Context.getFileDateTaken(path: String): Long {
+    val projection = arrayOf(
+            MediaStore.Images.Media.DATE_TAKEN
+    )
+
+    val uri = MediaStore.Files.getContentUri("external")
+    val selection = "${MediaStore.Images.Media.DATA} = ?"
+    val selectionArgs = arrayOf(path)
+
+    val cursor = contentResolver.query(uri, projection, selection, selectionArgs, null)
+    cursor?.use {
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    return cursor.getLongValue(MediaStore.Images.Media.DATE_TAKEN)
+                } catch (e: Exception) {
+                }
+            } while (cursor.moveToNext())
+        }
+    }
+
+    return 0L
+}
+
+fun Context.isChromebook() = packageManager.hasSystemFeature("org.chromium.arc.device_management")

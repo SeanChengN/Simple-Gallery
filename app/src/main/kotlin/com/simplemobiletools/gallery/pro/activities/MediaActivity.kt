@@ -73,6 +73,7 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
     private var mStoredCropThumbnails = true
     private var mStoredScrollHorizontally = true
     private var mStoredShowInfoBubble = true
+    private var mStoredShowFileTypes = true
     private var mStoredTextColor = 0
     private var mStoredPrimaryColor = 0
 
@@ -139,6 +140,10 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
             mLoadedInitialPhotos = false
             media_grid.adapter = null
             getMedia()
+        }
+
+        if (mStoredShowFileTypes != config.showThumbnailFileTypes) {
+            getMediaAdapter()?.updateShowFileTypes(config.showThumbnailFileTypes)
         }
 
         if (mStoredTextColor != config.textColor) {
@@ -234,6 +239,7 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
         }
 
         setupSearch(menu)
+        updateMenuItemColors(menu)
         return true
     }
 
@@ -284,6 +290,7 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
             mStoredCropThumbnails = cropThumbnails
             mStoredScrollHorizontally = scrollHorizontally
             mStoredShowInfoBubble = showInfoBubble
+            mStoredShowFileTypes = showThumbnailFileTypes
             mStoredTextColor = textColor
             mStoredPrimaryColor = primaryColor
             mShowAll = showAll
@@ -632,7 +639,10 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
 
     private fun deleteDBDirectory() {
         ensureBackgroundThread {
-            mDirectoryDao.deleteDirPath(mPath)
+            try {
+                mDirectoryDao.deleteDirPath(mPath)
+            } catch (ignored: Exception) {
+            }
         }
     }
 
@@ -832,7 +842,9 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
         } else {
             val isVideo = path.isVideoFast()
             if (isVideo) {
-                openPath(path, false)
+                val extras = HashMap<String, Boolean>()
+                extras[SHOW_FAVORITES] = mPath == FAVORITES
+                openPath(path, false, extras)
             } else {
                 Intent(this, ViewPagerActivity::class.java).apply {
                     putExtra(PATH, path)
